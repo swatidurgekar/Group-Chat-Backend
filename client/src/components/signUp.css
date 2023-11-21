@@ -1,0 +1,52 @@
+.signUp header {
+  background-color: rgb(241, 243, 244);
+  height: 5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+}
+.signUp-main {
+  background-color: rgb(50 70 90);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2em;
+}
+.signUp-main-form {
+  background-color: rgb(233 236 239);
+  width: 26em;
+  padding: 1em;
+  border: 0.2em solid rgb(113 154 169);
+  border-radius: 1em;
+}
+.signUp-main-form-heading {
+  margin: 0 0 1em 0;
+  font-size: 1.3em;
+}
+.label {
+  font-size: 1em;
+}
+input {
+  margin: 0 0 1em 0;
+  width: 100%;
+  height: 2em;
+  border: 0.1em solid rgb(113 154 169);
+  border-radius: 1em;
+}
+button {
+  width: 6em;
+  height: 2em;
+  color: rgb(113 154 169);
+  border: 1.5px solid rgb(113 154 169);
+  background-color: rgb(233 236 239);
+  margin: 0 0 1.5em 0;
+}
+.signUp-main-form :last-child span {
+  font-size: 0.8em;
+}
+.signUp-main-form :last-child a {
+  color: rgb(113 154 169);
+  font-weight: 500;
+  text-decoration: none;
+}
