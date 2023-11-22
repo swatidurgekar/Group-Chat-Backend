@@ -23,7 +23,7 @@ const SignUp = () => {
 
   return (
     <div className="signUp">
-      <header>Welcome To GroupChat</header>
+      <header>Welcome To Chat</header>
       <main className="signUp-main">
         <form onSubmit={submitHandler} className="signUp-main-form">
           <div className="signUp-main-form-heading">Sign Up</div>

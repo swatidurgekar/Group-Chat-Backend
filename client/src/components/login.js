@@ -1,9 +1,10 @@
 import "./signUp.css";
 import { useRef } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const url = "http://localhost:4000";
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -15,11 +16,14 @@ const Login = () => {
       password: passwordRef.current.value,
     });
     alert(response.data.message);
+    if (response.data.success) {
+      navigate("/welcome");
+    }
   };
 
   return (
     <div className="signUp">
-      <header>Welcome To GroupChat</header>
+      <header>Welcome To Chat</header>
       <main className="signUp-main">
         <form onSubmit={submitHandler} className="signUp-main-form">
           <div className="signUp-main-form-heading">Log In</div>
