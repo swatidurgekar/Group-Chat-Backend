@@ -1,13 +1,14 @@
 import "./signUp.css";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import axios from "axios";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
   const url = "http://localhost:4000";
   const emailRef = useRef();
   const passwordRef = useRef();
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -17,6 +18,8 @@ const Login = () => {
     });
     alert(response.data.message);
     if (response.data.success) {
+      localStorage.setItem("token", response.data.token);
+      setToken(response.data.token);
       navigate("/welcome");
     }
   };
