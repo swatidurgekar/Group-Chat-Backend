@@ -45,7 +45,8 @@ button {
 .signUp-main-form :last-child span {
   font-size: 0.8em;
 }
-.signUp-main-form :last-child a {
+#form-navigation {
+  font-size: 1em;
   color: rgb(113 154 169);
   font-weight: 500;
   text-decoration: none;
