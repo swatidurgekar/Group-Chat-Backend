@@ -1,11 +1,21 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./welcome.css";
 import axios from "axios";
 
 const Welcome = () => {
+  const [messages, setMessages] = useState([]);
   const chatMessage = useRef();
   const url = "http://localhost:4000";
   const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    getMessages();
+  }, []);
+
+  async function getMessages() {
+    const response = await axios.get(`${url}/api/message/get-message`);
+    setMessages(response.data.messages);
+  }
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -17,6 +27,7 @@ const Welcome = () => {
       { headers: { Authorization: token } }
     );
     alert(response.data.message);
+    getMessages();
   };
 
   return (
@@ -30,8 +41,9 @@ const Welcome = () => {
       <div className="chat">
         <div className="chat-name">Default</div>
         <div className="chat-messages">
-          <div>user1: Hello</div>
-          <div>user2 : Hii</div>
+          {messages.map((data) => {
+            return <div key={data.id}>{`${data.name}: ${data.message}`}</div>;
+          })}
         </div>
         <div className="chat-input">
           <input
