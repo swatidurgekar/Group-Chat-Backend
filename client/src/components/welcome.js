@@ -7,6 +7,7 @@ const Welcome = () => {
   const chatMessage = useRef();
   const url = "http://localhost:4000";
   const token = localStorage.getItem("token");
+  let intervalId;
 
   useEffect(() => {
     getMessages();
@@ -30,6 +31,14 @@ const Welcome = () => {
     getMessages();
   };
 
+  const realtime = () => {
+    clearInterval(intervalId);
+    intervalId = setInterval(() => {
+      getMessages();
+    }, 10000);
+  };
+  realtime();
+
   return (
     <div className="welcome">
       <div className="welcome-chat-name">
@@ -42,7 +51,12 @@ const Welcome = () => {
         <div className="chat-name">Default</div>
         <div className="chat-messages">
           {messages.map((data) => {
-            return <div key={data.id}>{`${data.name}: ${data.message}`}</div>;
+            return (
+              <div key={data.id}>
+                <div id="data-sender-name">~{data.name}</div>
+                <div id="data-sent-message">{data.message}</div>
+              </div>
+            );
           })}
         </div>
         <div className="chat-input">

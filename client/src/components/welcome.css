@@ -68,3 +68,12 @@
 button {
   height: 3em;
 }
+#data-sender-name {
+  margin: 0;
+  padding: 0;
+}
+#data-sent-message {
+  margin: 0;
+  padding: 0;
+  font-size: 1.1em;
+}
