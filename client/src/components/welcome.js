@@ -14,8 +14,22 @@ const Welcome = () => {
   }, []);
 
   async function getMessages() {
-    const response = await axios.get(`${url}/api/message/get-message`);
-    setMessages(response.data.messages);
+    let id;
+    let parsedLocalMessages = [];
+    const localMessages = localStorage.getItem("messages");
+    if (!localMessages) {
+      id = 0;
+    } else {
+      parsedLocalMessages = JSON.parse(localMessages);
+      id = parsedLocalMessages[parsedLocalMessages.length - 1].id;
+    }
+    const response = await axios.get(`${url}/api/message/get-message/${id}`);
+    const allMessages = parsedLocalMessages.concat(response.data.messages);
+    if (allMessages.length > 10) {
+      allMessages.splice(0, allMessages.length - 10);
+    }
+    localStorage.setItem("messages", JSON.stringify(allMessages));
+    setMessages(allMessages);
   }
 
   const submitHandler = async (event) => {
@@ -35,9 +49,9 @@ const Welcome = () => {
     clearInterval(intervalId);
     intervalId = setInterval(() => {
       getMessages();
-    }, 10000);
+    }, 30000);
   };
-  realtime();
+  // realtime();
 
   return (
     <div className="welcome">
