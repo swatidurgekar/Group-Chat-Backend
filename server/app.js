@@ -11,14 +11,20 @@ app.use(bodyParser.json());
 
 const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messageRoutes");
+const groupRoutes = require("./routes/groupRoutes");
 const User = require("./models/userModel");
 const Message = require("./models/messageModel");
+const Group = require("./models/groupModel");
 
 app.use("/api/user", userRoutes);
 app.use("/api/message", messageRoutes);
+app.use("/api/group", groupRoutes);
 
-User.hasMany(Message);
-Message.belongsTo(User);
+User.belongsToMany(Group, { through: "usergroups" });
+Group.belongsToMany(User, { through: "usergroups" });
+
+Group.hasMany(Message);
+Message.belongsTo(Group);
 
 sequelize
   .sync()
