@@ -10,7 +10,10 @@ const Welcome = () => {
   const [createGroupModal, setCreateGroupModal] = useState(false);
   const [addMembersModal, setAddMembersModal] = useState(false);
   const [selected, setSelected] = useState({ name: "" });
+  const [isAdmin, setIsAdmin] = useState(false);
   const [groups, setGroups] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [admins, setAdmins] = useState([]);
   const chatMessage = useRef();
   const url = "http://localhost:4000";
   const token = localStorage.getItem("token");
@@ -47,8 +50,12 @@ const Welcome = () => {
       `${url}/api/message/get-message/${group.id}`,
       {
         msgId,
+      },
+      {
+        headers: { Authorization: token },
       }
     );
+    setIsAdmin(response.data.admin);
     const allMessages = parsedLocalMessages.concat(response.data.messages);
     if (allMessages.length > 10) {
       allMessages.splice(0, allMessages.length - 10);
@@ -93,6 +100,23 @@ const Welcome = () => {
       email,
     });
     alert(response.data.message);
+    toggleAddMembersModel();
+  };
+
+  const showMembers = async () => {
+    setAddMembersModal((prevState) => !prevState);
+    const response = await axios.get(
+      `${url}/api/group/get-members/${selected.id}`
+    );
+    if (response.data.success) {
+      const responseUsers = response.data.users;
+      const responseAdmins = response.data.admins;
+      let filteredUsers = responseUsers.filter(
+        (user) => !responseAdmins.some((admin) => admin.email === user.email)
+      );
+      setUsers(filteredUsers);
+      setAdmins(responseAdmins);
+    }
   };
 
   const createGroup = async (name) => {
@@ -134,7 +158,7 @@ const Welcome = () => {
         {selected.name && (
           <div className="chat-name">
             <div>{selected.name}</div>
-            <button onClick={toggleAddMembersModel}>Add members</button>
+            <button onClick={showMembers}>All members</button>
           </div>
         )}
         {createGroupModal && (
@@ -145,8 +169,12 @@ const Welcome = () => {
         )}
         {addMembersModal && (
           <AddMember
+            isAdmin={isAdmin}
             toggleAddMembersModel={toggleAddMembersModel}
             addMembersHandler={addMembersHandler}
+            users={users}
+            admins={admins}
+            selected={selected}
           />
         )}
         <div className="chat-messages">

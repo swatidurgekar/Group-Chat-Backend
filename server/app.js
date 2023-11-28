@@ -15,6 +15,7 @@ const groupRoutes = require("./routes/groupRoutes");
 const User = require("./models/userModel");
 const Message = require("./models/messageModel");
 const Group = require("./models/groupModel");
+const Admin = require("./models/adminModel");
 
 app.use("/api/user", userRoutes);
 app.use("/api/message", messageRoutes);
@@ -25,6 +26,9 @@ Group.belongsToMany(User, { through: "usergroups" });
 
 Group.hasMany(Message);
 Message.belongsTo(Group);
+
+Group.hasMany(Admin);
+Admin.belongsTo(Group);
 
 sequelize
   .sync()

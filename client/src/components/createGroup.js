@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import "./createGroup.css";
 
-const CreateGroup = ({ changeCreateGroupModal, createGroup }) => {
+const CreateGroup = ({ toggleCreateGroupModal, createGroup }) => {
   const name = useRef();
 
   const submitHandler = () => {
@@ -10,7 +10,7 @@ const CreateGroup = ({ changeCreateGroupModal, createGroup }) => {
 
   return (
     <>
-      <div className="backdrop" onClick={changeCreateGroupModal}></div>
+      <div className="backdrop" onClick={toggleCreateGroupModal}></div>
       <div className="create-group">
         <h3>Create Group</h3>
         <form onSubmit={submitHandler}>

@@ -1,3 +1,4 @@
+const Admin = require("../models/adminModel");
 const Group = require("../models/groupModel");
 const Message = require("../models/messageModel");
 const User = require("../models/userModel");
@@ -27,11 +28,19 @@ exports.storeMessage = async (req, res, next) => {
 };
 
 exports.getMessage = async (req, res, next) => {
+  const user = req.user;
+  const groupId = req.params.id;
   const messages = await Message.findAll({
     where: {
-      groupId: req.params.id,
+      groupId,
       id: { [Sequelize.Op.gt]: req.body.msgId },
     },
   });
-  res.json({ success: true, messages });
+  const group = await Group.findByPk(groupId);
+  const admin = await group.getAdmins({ where: { email: user.email } });
+  if (admin.length === 0) {
+    res.json({ success: true, messages, admin: false });
+    return;
+  }
+  res.json({ success: true, messages, admin: true });
 };
