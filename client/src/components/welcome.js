@@ -15,7 +15,7 @@ const Welcome = () => {
   const [users, setUsers] = useState([]);
   const [admins, setAdmins] = useState([]);
   const chatMessage = useRef();
-  const url = "http://localhost:4000";
+  const url = "http://35.154.31.20:4000";
   const token = localStorage.getItem("token");
   let intervalId;
 
@@ -33,6 +33,7 @@ const Welcome = () => {
   }
 
   async function getMessages(group) {
+    getGroups();
     let parsedLocalMessages = [];
     let msgId;
     const localMessages = localStorage.getItem(group.id);
@@ -65,17 +66,24 @@ const Welcome = () => {
   }
 
   const submitHandler = async (event) => {
+    const groupUser = groups.filter((group) => {
+      return group.name === selected.name;
+    });
     event.preventDefault();
-    const response = await axios.post(
-      `${url}/api/message/store-message`,
-      {
-        message: chatMessage.current.value,
-        groupId: selected.id,
-      },
-      { headers: { Authorization: token } }
-    );
-    alert(response.data.message);
-    getMessages(selected);
+    if (groupUser.length === 0) {
+      alert("You are not a user of this group");
+    } else {
+      const response = await axios.post(
+        `${url}/api/message/store-message`,
+        {
+          message: chatMessage.current.value,
+          groupId: selected.id,
+        },
+        { headers: { Authorization: token } }
+      );
+      alert(response.data.message);
+      getMessages(selected);
+    }
   };
 
   const realtime = () => {

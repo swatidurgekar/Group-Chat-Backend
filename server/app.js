@@ -2,7 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const http = require("http");
 const sequelize = require("./util/database");
+const port = process.env.PORT;
 
 const app = express();
 app.use(cors());
@@ -32,5 +34,10 @@ Admin.belongsTo(Group);
 
 sequelize
   .sync()
-  .then(() => app.listen("4000"))
+  .then(() => {
+    const server = http.createServer(app);
+    server.listen(process.env.port, () => {
+      console.log(`Server running on port ${port}`);
+    });
+  })
   .catch((err) => console.log(err));
