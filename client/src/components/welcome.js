@@ -15,7 +15,7 @@ const Welcome = () => {
   const [users, setUsers] = useState([]);
   const [admins, setAdmins] = useState([]);
   const chatMessage = useRef();
-  const url = "http://35.154.31.20:4000";
+  const url = "http://3.110.172.25";
   const token = localStorage.getItem("token");
   let intervalId;
 
