@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import "./welcome.css";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { FaRegPenToSquare } from "react-icons/fa6";
+import { io } from "socket.io-client";
+import "./welcome.css";
 import CreateGroup from "./createGroup";
 import AddMember from "./addMembers";
 
@@ -15,61 +16,84 @@ const Welcome = () => {
   const [users, setUsers] = useState([]);
   const [admins, setAdmins] = useState([]);
   const chatMessage = useRef();
-  const url = "http://3.110.172.25:4000";
+  // const url = "http://3.110.172.25:4000";
+  const url = "http://localhost:4000";
   const token = localStorage.getItem("token");
   let intervalId;
+  // const socket = io(url);
 
-  useEffect(() => {
-    getGroups();
-  }, []);
+  // socket.on("recieve-message", (message) => {
+  //   if (selected.id) {
+  //     console.log(message);
+  //     getMessages(selected);
+  //   }
+  // });
 
-  async function getGroups() {
+  const getGroups = useCallback(async () => {
     const response = await axios.get(`${url}/api/group/get-groups`, {
       headers: { Authorization: token },
     });
     if (response.data.success) {
       setGroups(response.data.groups);
     }
-  }
+  }, []);
 
-  async function getMessages(group) {
-    getGroups();
-    let parsedLocalMessages = [];
-    let msgId;
-    const localMessages = localStorage.getItem(group.id);
-    if (localMessages) {
-      parsedLocalMessages = JSON.parse(localMessages);
-      if (parsedLocalMessages.length === 0) {
-        msgId = 0;
+  const getMessages = useCallback(
+    async (group) => {
+      getGroups();
+      let parsedLocalMessages = [];
+      let msgId;
+      const localMessages = localStorage.getItem(group.id);
+      if (localMessages) {
+        parsedLocalMessages = JSON.parse(localMessages);
+        if (parsedLocalMessages.length === 0) {
+          msgId = 0;
+        } else {
+          msgId = parsedLocalMessages[parsedLocalMessages.length - 1].id;
+        }
       } else {
-        msgId = parsedLocalMessages[parsedLocalMessages.length - 1].id;
+        msgId = 0;
       }
-    } else {
-      msgId = 0;
-    }
-    const response = await axios.post(
-      `${url}/api/message/get-message/${group.id}`,
-      {
-        msgId,
-      },
-      {
-        headers: { Authorization: token },
+      const response = await axios.post(
+        `${url}/api/message/get-message/${group.id}`,
+        {
+          msgId,
+        },
+        {
+          headers: { Authorization: token },
+        }
+      );
+      setIsAdmin(response.data.admin);
+      const allMessages = parsedLocalMessages.concat(response.data.messages);
+      if (allMessages.length > 10) {
+        allMessages.splice(0, allMessages.length - 10);
       }
-    );
-    setIsAdmin(response.data.admin);
-    const allMessages = parsedLocalMessages.concat(response.data.messages);
-    if (allMessages.length > 10) {
-      allMessages.splice(0, allMessages.length - 10);
-    }
-    localStorage.setItem(group.id, JSON.stringify(allMessages));
-    setMessages(allMessages);
-  }
+      localStorage.setItem(group.id, JSON.stringify(allMessages));
+      setMessages(allMessages);
+    },
+    [getGroups]
+  );
+  // socket.on("connect", () => {});
+  // socket.on("recieve-message", (message) => {
+  //   if (selected.id) {
+  //     console.log(message);
+  //     const arr = [...messages];
+  //     arr.push({ id: 1, message });
+  //     setMessages(arr);
+  //   }
+  // });
+
+  useEffect(() => {
+    getGroups();
+  }, []);
 
   const submitHandler = async (event) => {
+    event.preventDefault();
     const groupUser = groups.filter((group) => {
       return group.name === selected.name;
     });
-    event.preventDefault();
+
+    // socket.emit("send-message", chatMessage.current.value, selected.id);
     if (groupUser.length === 0) {
       alert("You are not a user of this group");
     } else {
@@ -83,16 +107,9 @@ const Welcome = () => {
       );
       alert(response.data.message);
       getMessages(selected);
+      chatMessage.current.value = "";
     }
   };
-
-  const realtime = () => {
-    clearInterval(intervalId);
-    intervalId = setInterval(() => {
-      getMessages();
-    }, 30000);
-  };
-  // realtime();
 
   const toggleCreateGroupModal = () => {
     setCreateGroupModal((prevState) => !prevState);
@@ -139,6 +156,7 @@ const Welcome = () => {
   const selectGroup = (group) => {
     setSelected(group);
     getMessages(group);
+    // socket.emit("join-room", group.id);
   };
 
   return (

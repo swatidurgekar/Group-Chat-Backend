@@ -4,7 +4,8 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 
 const SignUp = () => {
-  const url = "http://3.110.172.25:4000";
+  // const url = "http://3.110.172.25:4000";
+  const url = "http://localhost:4000";
   const nameRef = useRef();
   const emailRef = useRef();
   const phoneRef = useRef();

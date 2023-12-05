@@ -11,7 +11,8 @@ const AddMember = ({
   selected,
 }) => {
   const email = useRef();
-  const url = "http://3.110.172.25:4000";
+  // const url = "http://3.110.172.25:4000";
+  const url = "http://localhost:4000";
   const [addUser, setAddUser] = useState(false);
 
   const submitHandler = (event) => {
