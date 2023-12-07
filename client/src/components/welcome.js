@@ -16,10 +16,10 @@ const Welcome = () => {
   const [users, setUsers] = useState([]);
   const [admins, setAdmins] = useState([]);
   const chatMessage = useRef();
+  const imgMessage = useRef();
   // const url = "http://3.110.172.25:4000";
   const url = "http://localhost:4000";
   const token = localStorage.getItem("token");
-  let intervalId;
   // const socket = io(url);
 
   // socket.on("recieve-message", (message) => {
@@ -159,6 +159,27 @@ const Welcome = () => {
     // socket.emit("join-room", group.id);
   };
 
+  const submitImageHandler = async (e) => {
+    e.preventDefault();
+    const file = imgMessage.current.files[0];
+    if (file && file.type.startsWith("image/")) {
+      const formdata = new FormData();
+      formdata.append("image", file);
+      formdata.append("groupId", selected.id);
+
+      const res = await axios.post(`${url}/api/message/store-image`, formdata, {
+        headers: {
+          Authorization: token,
+          "Content-Type": "multipart/form-data", // Make sure to set the content type
+        },
+      });
+      alert(res.data.message);
+      getMessages(selected);
+    } else {
+      alert("Please select a image file :)");
+    }
+  };
+
   return (
     <div className="welcome">
       <div className="welcome-chat-name">
@@ -208,22 +229,34 @@ const Welcome = () => {
             return (
               <div key={data.id}>
                 <div id="data-sender-name">~{data.name}</div>
-                <div id="data-sent-message">{data.message}</div>
+                {data.message.startsWith("https://groupchatimages") ? (
+                  <div id="data-sent-message">
+                    <a href={data.message} target="_blank">
+                      <img src={data.message} />
+                    </a>
+                  </div>
+                ) : (
+                  <div id="data-sent-message">{data.message}</div>
+                )}
               </div>
             );
           })}
         </div>
         {selected.name && (
           <div className="chat-input">
-            <input
-              name="chat"
-              placeholder="Type something..."
-              ref={chatMessage}
-              required
-            />
-            <button type="submit" onClick={submitHandler}>
-              send
-            </button>
+            <form onSubmit={submitHandler} className="chat-input-form ">
+              <input
+                name="chat"
+                placeholder="Type something..."
+                ref={chatMessage}
+                required
+              />
+              <button type="submit">send</button>
+            </form>
+            <form onSubmit={submitImageHandler} className="chat-input-form ">
+              <input name="image" ref={imgMessage} type="file" required />
+              <button type="submit">send</button>
+            </form>
           </div>
         )}
       </div>
